@@ -1,6 +1,5 @@
 import { rest, RequestHandler } from "msw";
 import type { YockMockOption } from ".";
-import { removeTrailingSlash } from "./utils/removeTrailingSlash";
 import { headersToObject } from "headers-utils";
 
 export const getRequestHandlers = ({
@@ -42,14 +41,9 @@ export const getRequestHandlers = ({
     for (const proxy of currentMockProxy.proxies) {
       handlers.push(
         rest[proxy.httpMethod](proxy.path, async (req, res, ctx) => {
-          const proxyUrl = `${removeTrailingSlash(proxy.targetBaseUrl)}${
-            req.url.pathname
-          }`;
-          const originalRes = await ctx.fetch(proxyUrl, {
-            method: proxy.httpMethod,
-            headers: req.headers,
-            body: req.body?.toString(),
-          });
+          const proxyReq = { ...req };
+          proxyReq.url = new URL(req.url.pathname, proxy.targetBaseUrl)
+          const originalRes = await ctx.fetch(proxyReq);
           return res(
             ctx.status(originalRes.status),
             ctx.set(headersToObject(originalRes.headers)),
