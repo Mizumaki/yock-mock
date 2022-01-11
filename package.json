@@ -7,6 +7,10 @@
   ],
   "author": "Ryota Mizumaki <statham.programming@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mizumaki/yock-mock"
+  },
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
